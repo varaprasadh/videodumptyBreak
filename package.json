@@ -59,6 +59,7 @@
       "app/main.prod.js.map",
       "package.json"
     ],
+    
     "dmg": {
       "contents": [
         {
