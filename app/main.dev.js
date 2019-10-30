@@ -6,10 +6,10 @@
  *
  * @flow
  */
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import log from 'electron-log';
-
-
+import getDimensions from "./ffmpegHandlers/getDimensions";
+import breakVideo from "./ffmpegHandlers/breakVideo";
 export default class AppUpdater {
   constructor() {
     log.transports.file.level = 'info';
@@ -64,7 +64,12 @@ app.on('ready', async () => {
   mainWindow = new BrowserWindow({
     show: false,
     width: 1024,
-    height: 728
+    height: 728,
+    title:"VideoDumptyBreak",
+    resizable:false,
+    webPreferences:{
+      devTools:false
+    }
   });
 
   mainWindow.loadURL(`file://${__dirname}/app.html`);
@@ -86,4 +91,22 @@ app.on('ready', async () => {
     mainWindow = null;
   });
 
+
+  ipcMain.on('get-video-resolution',(event,args)=>{
+    getDimensions(args).then(res=>{
+      event.sender.send('got-video-resolution',res)
+    }).catch(err => {
+      event.sender.send('error', null);
+    })
+  });
+  ipcMain.on('process-video',(event,data)=>{
+     let process= breakVideo(data);
+      process.on('progress', (progress) => {
+          event.sender.send('process-progress',progress)
+      });
+      process.once('end', () => {
+          event.sender.send("process-progress-done");
+      });
+  })
+  mainWindow.setTitle("VideoDumptyBreak")
 });

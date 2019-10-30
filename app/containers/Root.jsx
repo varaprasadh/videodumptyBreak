@@ -1,13 +1,13 @@
 import React, { Component } from 'react'
 import App from "./App";
-import "./styles/global.css";
-
+import { ToastContainer, toast } from 'react-toastify';
 
 export class Root extends Component {
     render() {
         return (
             <div>
                 <App/>
+                <ToastContainer />
             </div>
         )
     }

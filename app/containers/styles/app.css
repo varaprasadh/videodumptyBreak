@@ -13,11 +13,19 @@
     align-items: center;
     flex-direction: column; 
     margin-left: 1px;
-} 
+    max-width: 400px;
+}
+.title{
+    font-family: sans-serif;
+    font-weight: bold;
+    font-size:2em;
+    padding: 20px 30px;
+}
 
-.drop_container{
+.drop_container,
+.drop_overlay{
     width: 350px;
-    background: rgb(183, 190, 190);
+    background: rgb(248, 248, 248);
     height: 200px;
     cursor: pointer;
     position: relative;
@@ -27,22 +35,20 @@
     font-family: sans-serif;
     font-weight: bold;
 }
-
-.drop_overlay{
-    position: absolute;
-    top:0px; bottom: 0px; right: 0px; left: 0px;
-    background: rgb(255, 248, 248);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    display: none;
+.drop_container{
+  border: 1px solid gray;
 }
+.drop_overlay{
+  border: 2px dotted #95a5a6;
+  flex-direction: column;
+}
+
 .drop_overlay>img{
     width:50px;
     height: 50px;
     padding: 10px;
 }
+
 .alignstart{
     text-align: start;
 }
@@ -52,7 +58,7 @@
 }
 .row{
     flex: 1;
-    min-height: 300px;
+    min-height:250px;
     display: flex;
     align-items: center;   
     margin-top: 1px;
@@ -75,6 +81,7 @@
     min-height: 100px;
     justify-content: space-between;
     padding: 0px 10px;
+    border-top: 2px solid rgb(18, 14, 80);
 }
 .btn{
     padding: 10px 20px;
@@ -99,6 +106,7 @@
 .prefs_row{
     align-items: flex-start;
     padding: 10px;
+    min-height:200px;
 }
 .prefs{
     background:none;
@@ -123,15 +131,22 @@
     display: flex;
     align-items: center;
     margin-top: 20px;
+    justify-content: space-around;
+    width:80%;
+    margin-left: auto;
+    margin-right: auto;
+    font-family: sans-serif;
+   
 }
-.res_box_wrapper>*{
+.res_box_wrapper>input{
     padding: 10px;
+    max-width: 100px;
 }
 .res_box{
-    padding:10px;
     border: 2px solid #7f8c8d;
     border-radius: 10px;
     outline: none;
+    text-align: center;
 }
 .file_type_chooser{
     display: flex;
@@ -200,3 +215,7 @@
           transform: rotate(45deg);
 }
 
+.disabled{
+    background: #606c6d !important;
+    color: white;
+}
