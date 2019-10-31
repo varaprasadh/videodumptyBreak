@@ -198,7 +198,7 @@
     "devtron": "^1.4.0",
     "electron-debug": "^2.0.0",
     "electron-log": "^2.2.17",
-    "electron-updater": "^3.2.3",
+    "electron-updater": "^4.0.0",
     "ffmpeg": "0.0.4",
     "ffmpeg-progress-wrapper": "^1.1.5",
     "fluent-ffmpeg": "^2.1.2",
