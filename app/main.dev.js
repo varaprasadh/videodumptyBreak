@@ -90,7 +90,7 @@ app.on('ready', async () => {
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
-
+ mainWindow.setMenu(null);
 
   ipcMain.on('get-video-resolution',(event,args)=>{
     getDimensions(args).then(res=>{

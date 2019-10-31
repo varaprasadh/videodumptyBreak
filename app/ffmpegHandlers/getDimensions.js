@@ -1,11 +1,7 @@
 
 const FFmpeg = require('fluent-ffmpeg');
 
-
-
-const _path = "/home/varaprasadh/Downloads/How to create page transitions with React Router.mp4";
-
-function getDimensions(path=_path){
+function getDimensions(path){
     console.log("new parh",path);
 
 
