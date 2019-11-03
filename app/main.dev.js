@@ -67,9 +67,9 @@ app.on('ready', async () => {
     height: 728,
     title:"VideoDumptyBreak",
     resizable:false,
-    webPreferences:{
-      devTools:false
-    }
+    // webPreferences:{
+    //   devTools:false
+    // }
   });
 
   mainWindow.loadURL(`file://${__dirname}/app.html`);

@@ -9,6 +9,8 @@ import { toast } from 'react-toastify';
 import { ipcRenderer } from 'electron';
 import ProgressBar from './components/ProgressBar';
 
+import fs from 'fs';
+
 
 
 export class App extends Component {
@@ -32,12 +34,14 @@ export class App extends Component {
         
     }
     componentDidMount(){
+        
         ipcRenderer.on('got-video-resolution', (event, res) => {
             console.log("got res", res)
             this.setState({
                 op_width: `${res.width}`,
                 op_height: `${res.height}`
             })
+
         });
         ipcRenderer.on('process-progress',(event,args)=>{
             //change progress state
@@ -169,7 +173,7 @@ export class App extends Component {
         ]
         let {inputVideo,outputFolder,op_width,op_height,destination_folder_name}=this.state;
         let buttonEnabled = (inputVideo != null && outputFolder != null && op_width.trim() != '' && op_height.trim() != '' && destination_folder_name.trim() != '');
-
+        
    
         return (
             !this.state.reset &&
