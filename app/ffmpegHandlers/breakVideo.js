@@ -1,6 +1,7 @@
 const path=require('path');
 const fs=require('fs');
 const {FFMpegProgress} = require('ffmpeg-progress-wrapper');
+const FFMPEG_PATH = require('ffmpeg-static').path.replace('app.asar', 'app.asar.unpacked')
 
 function breakVideo({destination_folder_name,inputVideo,op_height,op_width,outputFolder,selected_photo_type}){
    let op_ext = selected_photo_type.value;
@@ -13,7 +14,9 @@ function breakVideo({destination_folder_name,inputVideo,op_height,op_width,outpu
     const process = new FFMpegProgress(['-i', `${inputVideo}`,
         '-vf', `scale='${op_width}':'${op_height}'`,
         `${_output_path}%8d.${op_ext}`
-    ]);
+    ],{
+        cmd: FFMPEG_PATH
+    });
    return process;
 }
 
