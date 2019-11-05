@@ -42,11 +42,10 @@ export class App extends Component {
         ipcRenderer.on('process-progress',(event,args)=>{
             //change progress state
             console.log("progress",args);
-            let progress = Math.floor(args.percent);
+            let progress = Math.ceil(args.percent);
             this.setState({
                 percent:progress
             })
-
         })
         ipcRenderer.on('process-progress-done',(event)=>{
             //hide progress and reset its state
@@ -59,6 +58,10 @@ export class App extends Component {
                percent:0
            });
            toast.success("process completed");
+        });
+        ipcRenderer.on('error',(event)=>{
+            this.resetApp();
+            toast.error("something went wrong");
         })
     }
     
