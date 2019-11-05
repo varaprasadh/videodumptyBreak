@@ -42,9 +42,6 @@ const installExtensions = async () => {
   ).catch(console.log);
 };
 
-/**
- * Add event listeners...
- */
 
 app.on('window-all-closed', () => {
 
@@ -99,8 +96,9 @@ app.on('ready', async () => {
       event.sender.send('error', null);
     })
   });
+  
   ipcMain.on('process-video',(event,data)=>{
-     const process= breakVideo(data);
+      const process= breakVideo(data);
       process.on('progress', (progress) => {
           event.sender.send('process-progress',progress)
       });
@@ -108,6 +106,19 @@ app.on('ready', async () => {
           event.sender.send("process-progress-done");
       });
       process.run();
+      ipcMain.on('kill-process', (event) => {
+        if (process) {
+          try {
+            process.kill();
+          } catch (err) {
+            //handle error : not needed
+          }
+        }
+      });
+      process.on('error',()=>{
+        // event.sender.send('')
+      })
   })
+  
   mainWindow.setTitle("VideoDumptyBreak")
 });

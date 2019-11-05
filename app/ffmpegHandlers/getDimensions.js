@@ -8,7 +8,7 @@ const FFPROBE_PATH = require('ffprobe-static').path.replace('app.asar', 'app.asa
 
 function getDimensions(path){
   
-    // console.log(path)
+    console.log("got path at getdimentions",path)
     return new Promise((resolve,reject)=>{
         if (!path) {
             reject(new Error("path not specified"));
@@ -21,7 +21,10 @@ function getDimensions(path){
            command.setFfprobePath(FFPROBE_PATH);
            command.ffprobe(0,(err,meta)=>{
                if(err) reject(err);
-               const {width,height}=meta.streams[0];
+               console.log(meta.streams);
+               let videos_stream=meta.streams.find(({codec_type})=>codec_type=='video');
+
+               const {width,height}=videos_stream;
                console.log({
                    width,
                    height

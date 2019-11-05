@@ -153,6 +153,13 @@ export class App extends Component {
             destination_folder_name:target.value
         })
    }
+   cancelOperation(){
+     ipcRenderer.send('kill-process');
+     this.setState({
+         percent:0,
+         processing:false
+     });
+   }
     render() {
         const options = [{
                 value: "png",
@@ -175,7 +182,7 @@ export class App extends Component {
                  </div>
                  <audio hidden src={ding_sound} ref={ding=>this._ding=ding}/>
                 {
-                    this.state.processing==true && <ProgressBar percent={this.state.percent}/>
+                    this.state.processing==true && <ProgressBar onCancel={this.cancelOperation.bind(this)} percent={this.state.percent}/>
                 }
                   <div className={styles.row}>
                      <DropZone 
