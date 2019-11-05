@@ -9,10 +9,6 @@ import { toast } from 'react-toastify';
 import { ipcRenderer } from 'electron';
 import ProgressBar from './components/ProgressBar';
 
-import fs from 'fs';
-
-
-
 export class App extends Component {
     
     constructor(props){
@@ -46,8 +42,7 @@ export class App extends Component {
         ipcRenderer.on('process-progress',(event,args)=>{
             //change progress state
             console.log("progress",args);
-            let progress = Math.ceil(args.progress*100);
-
+            let progress = Math.floor(args.percent);
             this.setState({
                 percent:progress
             })
@@ -88,14 +83,8 @@ export class App extends Component {
   }
 
    breakApart(){
-      console.log(this.state);
-      /*
-           inputVideo: null,
-           outputFolder: null,
-           op_width: '',
-           op_height: '',
-           destination_folder_name: '',
-      */
+    //   console.log(this.state);
+
      let {inputVideo,outputFolder,op_width,op_height,destination_folder_name,selected_photo_type}=this.state;
      if(inputVideo!=null && outputFolder!=null && op_width.trim()!='' && op_height.trim()!=''&& destination_folder_name.trim()!=''){
          toast.success("processing started...");

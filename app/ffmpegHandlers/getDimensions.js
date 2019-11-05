@@ -1,21 +1,13 @@
 
 
 const FFmpeg = require('fluent-ffmpeg');
-const _path=require("path");
 
 const FFMPEG_PATH = require('ffmpeg-static').path.replace('app.asar', 'app.asar.unpacked')
 const FFPROBE_PATH = require('ffprobe-static').path.replace('app.asar', 'app.asar.unpacked')
 
 
-
-console.log(FFMPEG_PATH);
-console.log(FFPROBE_PATH);
-
-
 function getDimensions(path){
-    console.log("new parh",path);
-
-
+  
     // console.log(path)
     return new Promise((resolve,reject)=>{
         if (!path) {

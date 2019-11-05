@@ -94,19 +94,20 @@ app.on('ready', async () => {
 
   ipcMain.on('get-video-resolution',(event,args)=>{
     getDimensions(args).then(res=>{
-      event.sender.send('got-video-resolution',res)
+      event.sender.send('got-video-resolution',res);
     }).catch(err => {
       event.sender.send('error', null);
     })
   });
   ipcMain.on('process-video',(event,data)=>{
-     let process= breakVideo(data);
+     const process= breakVideo(data);
       process.on('progress', (progress) => {
           event.sender.send('process-progress',progress)
       });
       process.once('end', () => {
           event.sender.send("process-progress-done");
       });
+      process.run();
   })
   mainWindow.setTitle("VideoDumptyBreak")
 });
