@@ -26,7 +26,7 @@ function breakVideo({destination_folder_name,inputVideo,op_height,op_width,outpu
     process.setFfprobePath(FFPROBE_PATH);
     process.addOption(`-vf scale='${op_width}':'${op_height}'`)
     process.save(`${_output_path}%8d.${op_ext}`);
-  
+
    return process;
 }
 
