@@ -209,12 +209,10 @@
     "electron-debug": "^2.0.0",
     "electron-log": "^2.2.17",
     "electron-updater": "^4.0.0",
-    "ffmpeg": "0.0.4",
-    "ffmpeg-progress-wrapper": "^1.1.5",
-    "fluent-ffmpeg": "^2.1.2",
-    "source-map-support": "^0.5.9",
     "ffmpeg-static": "^2.7.0",
-    "ffprobe-static": "^3.0.0"
+    "ffprobe-static": "^3.0.0",
+    "fluent-ffmpeg": "^2.1.2",
+    "source-map-support": "^0.5.9"
   },
   "devEngines": {
     "node": ">=7.x",

@@ -9,8 +9,6 @@ import { toast } from 'react-toastify';
 import { ipcRenderer } from 'electron';
 import ProgressBar from './components/ProgressBar';
 
-
-
 export class App extends Component {
     
     constructor(props){
@@ -32,22 +30,22 @@ export class App extends Component {
         
     }
     componentDidMount(){
+        
         ipcRenderer.on('got-video-resolution', (event, res) => {
             console.log("got res", res)
             this.setState({
                 op_width: `${res.width}`,
                 op_height: `${res.height}`
             })
+
         });
         ipcRenderer.on('process-progress',(event,args)=>{
             //change progress state
             console.log("progress",args);
-            let progress = Math.ceil(args.progress*100);
-
+            let progress = Math.ceil(args.percent);
             this.setState({
                 percent:progress
             })
-
         })
         ipcRenderer.on('process-progress-done',(event)=>{
             //hide progress and reset its state
@@ -60,6 +58,10 @@ export class App extends Component {
                percent:0
            });
            toast.success("process completed");
+        });
+        ipcRenderer.on('error',(event)=>{
+            this.resetApp();
+            toast.error("something went wrong");
         })
     }
     
@@ -84,14 +86,8 @@ export class App extends Component {
   }
 
    breakApart(){
-      console.log(this.state);
-      /*
-           inputVideo: null,
-           outputFolder: null,
-           op_width: '',
-           op_height: '',
-           destination_folder_name: '',
-      */
+    //   console.log(this.state);
+
      let {inputVideo,outputFolder,op_width,op_height,destination_folder_name,selected_photo_type}=this.state;
      if(inputVideo!=null && outputFolder!=null && op_width.trim()!='' && op_height.trim()!=''&& destination_folder_name.trim()!=''){
          toast.success("processing started...");
@@ -157,6 +153,13 @@ export class App extends Component {
             destination_folder_name:target.value
         })
    }
+   cancelOperation(){
+     ipcRenderer.send('kill-process');
+     this.setState({
+         percent:0,
+         processing:false
+     });
+   }
     render() {
         const options = [{
                 value: "png",
@@ -169,7 +172,7 @@ export class App extends Component {
         ]
         let {inputVideo,outputFolder,op_width,op_height,destination_folder_name}=this.state;
         let buttonEnabled = (inputVideo != null && outputFolder != null && op_width.trim() != '' && op_height.trim() != '' && destination_folder_name.trim() != '');
-
+        
    
         return (
             !this.state.reset &&
@@ -179,7 +182,7 @@ export class App extends Component {
                  </div>
                  <audio hidden src={ding_sound} ref={ding=>this._ding=ding}/>
                 {
-                    this.state.processing==true && <ProgressBar percent={this.state.percent}/>
+                    this.state.processing==true && <ProgressBar onCancel={this.cancelOperation.bind(this)} percent={this.state.percent}/>
                 }
                   <div className={styles.row}>
                      <DropZone 
