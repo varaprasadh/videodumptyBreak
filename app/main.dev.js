@@ -102,23 +102,24 @@ app.on('ready', async () => {
       process.on('progress', (progress) => {
           event.sender.send('process-progress',progress)
       });
+      process.on('start',()=>{
+         ipcMain.on('kill-process', (event) => {
+           if (process) {
+            //  process.kill("SIGSTOP");
+             process.kill();
+           }
+         });
+      })
       process.once('end', () => {
           event.sender.send("process-progress-done");
       });
       process.run();
-      ipcMain.on('kill-process', (event) => {
-        if (process) {
-          try {
-            process.kill();
-          } catch (err) {
-            //handle error : not needed
-          }
-        }
-      });
-      process.on('error',()=>{
+      
+      process.on('error',(err)=>{
         // event.sender.send('')
+        console.log("process killed",err);
+        
       })
   })
-  
-  mainWindow.setTitle("VideoDumptyBreak")
+
 });

@@ -75,7 +75,8 @@ export class App extends Component {
      ipcRenderer.send('get-video-resolution',file.path);
       this.setState({
           inputVideo: file,
-          destination_folder_name: file.name.split(".")[0] + "/"
+          destination_folder_name: file.name.split(".")[0] + "/",
+          outputFolder:file
       });
   }
   handleOutputFolder(file) {
@@ -94,7 +95,7 @@ export class App extends Component {
          //send this data to main process
          let obj = {
              inputVideo:inputVideo.path,
-             outputFolder:outputFolder.path,
+             outputFolder:outputFolder.path.split('/').slice(0,-1).join('/'),
              op_width,
              op_height,
              destination_folder_name,
@@ -130,7 +131,7 @@ export class App extends Component {
                             outputFolder:null,
                             op_width:'',
                             op_height:'',
-                            destination_folder_name:'',
+                            destination_folder_name:"",
                             dingEnabled:true
                         }
                   )
@@ -177,9 +178,7 @@ export class App extends Component {
         return (
             !this.state.reset &&
             <div className={styles.app}>
-                 <div className={styles.title}>
-                     VideoDumptyBreak
-                 </div>
+
                  <audio hidden src={ding_sound} ref={ding=>this._ding=ding}/>
                 {
                     this.state.processing==true && <ProgressBar onCancel={this.cancelOperation.bind(this)} percent={this.state.percent}/>
@@ -199,6 +198,7 @@ export class App extends Component {
                        title="SET OUTPUT FOLDER"
                         onDropFile={this.handleOutputFolder.bind(this)}
                         type="folder"
+                        destination_folder_name={this.state.outputFolder}
                         defaultLabelText="No Output Folder Location Set"
                        />
                     </div>
@@ -370,7 +370,9 @@ class DropZone extends Component{
                 </div>)
                 }
                 <div className={styles.videoTitle}>
-                    {this.state.defaultLabelText}
+                    {
+                        this.props.destination_folder_name !=null ? this.props.destination_folder_name.path.split('/').slice(-2).shift()+"/":this.state.defaultLabelText
+                    }
                 </div>
             </div>
         </div>
