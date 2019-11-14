@@ -96,29 +96,33 @@ app.on('ready', async () => {
       event.sender.send('error', null);
     })
   });
-  
+
   ipcMain.on('process-video',(event,data)=>{
       const process= breakVideo(data);
       process.on('progress', (progress) => {
           event.sender.send('process-progress',progress)
       });
+      process.on('start',()=>{
+         ipcMain.on('kill-process', (event) => {
+           if (process) {
+              try{       
+                  process.kill();
+              }catch(err){
+                console.log(err);
+              }
+           }
+         });
+      })
       process.once('end', () => {
           event.sender.send("process-progress-done");
       });
       process.run();
-      ipcMain.on('kill-process', (event) => {
-        if (process) {
-          try {
-            process.kill();
-          } catch (err) {
-            //handle error : not needed
-          }
-        }
-      });
-      process.on('error',()=>{
+      
+      process.on('error',(err)=>{
         // event.sender.send('')
+        console.log("process killed",err);
+        
       })
   })
-  
-  mainWindow.setTitle("VideoDumptyBreak")
+
 });
