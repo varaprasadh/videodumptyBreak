@@ -96,7 +96,7 @@ app.on('ready', async () => {
       event.sender.send('error', null);
     })
   });
-  
+
   ipcMain.on('process-video',(event,data)=>{
       const process= breakVideo(data);
       process.on('progress', (progress) => {
@@ -105,8 +105,11 @@ app.on('ready', async () => {
       process.on('start',()=>{
          ipcMain.on('kill-process', (event) => {
            if (process) {
-            //  process.kill("SIGSTOP");
-             process.kill();
+              try{       
+                  process.kill();
+              }catch(err){
+                console.log(err);
+              }
            }
          });
       })

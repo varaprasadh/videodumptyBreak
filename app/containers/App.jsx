@@ -27,7 +27,7 @@ export class App extends Component {
           percent:0,
           processing:false
         }
-        
+        this.handleInputVideoFile = this.handleInputVideoFile.bind(this);
     }
     componentDidMount(){
         
@@ -73,10 +73,10 @@ export class App extends Component {
   handleInputVideoFile(file) {
       
      ipcRenderer.send('get-video-resolution',file.path);
+     let _filename;
       this.setState({
           inputVideo: file,
-          destination_folder_name: file.name.split(".")[0] + "/",
-          outputFolder:file
+          destination_folder_name: file.name.split(".").slice(0,-1).join(".")+ "/",
       });
   }
   handleOutputFolder(file) {
@@ -90,12 +90,19 @@ export class App extends Component {
     //   console.log(this.state);
 
      let {inputVideo,outputFolder,op_width,op_height,destination_folder_name,selected_photo_type}=this.state;
-     if(inputVideo!=null && outputFolder!=null && op_width.trim()!='' && op_height.trim()!=''&& destination_folder_name.trim()!=''){
+     if(inputVideo!=null &&  op_width.trim()!='' && op_height.trim()!=''&& destination_folder_name.trim()!=''){
          toast.success("processing started...");
          //send this data to main process
+         let __outputFolderpath = inputVideo.path;
+         if (__outputFolderpath.indexOf("\\") != -1) {
+             __outputFolderpath = __outputFolderpath.split("\\").slice(0, -1).join("/");
+         } else {
+             __outputFolderpath = __outputFolderpath.split("/").slice(0, -1).join("/");
+         }
+         let _outputFolder=outputFolder||{path:__outputFolderpath}
          let obj = {
              inputVideo:inputVideo.path,
-             outputFolder:outputFolder.path.split('/').slice(0,-1).join('/'),
+             outputFolder: _outputFolder.path,
              op_width,
              op_height,
              destination_folder_name,
@@ -161,6 +168,17 @@ export class App extends Component {
          processing:false
      });
    }
+   appDragover(e){
+     event.preventDefault();
+     e.dataTransfer.dropEffect = "none";
+   }
+   appDragstart(e){
+    e.dataTransfer.dropEffect = "none";
+   }
+   appDragend(e){
+     e.dataTransfer.dropEffect = "none";
+   }
+ 
     render() {
         const options = [{
                 value: "png",
@@ -172,12 +190,31 @@ export class App extends Component {
             },
         ]
         let {inputVideo,outputFolder,op_width,op_height,destination_folder_name}=this.state;
-        let buttonEnabled = (inputVideo != null && outputFolder != null && op_width.trim() != '' && op_height.trim() != '' && destination_folder_name.trim() != '');
+        let buttonEnabled = (inputVideo != null && op_width.trim() != '' && op_height.trim() != '' && destination_folder_name.trim() != '');
         
-   
+        var {name=""}=this.state.inputVideo||{}
+        let inputVideoTitle=name;
+        var {path=""} =this.state.inputVideo||{};
+         let _outputFolderTitle = path;
+         console.log("deug",_outputFolderTitle);
+        if (path.indexOf("\\") != -1) {
+            _outputFolderTitle = path.split("\\").slice(0,-1).join("/");
+        } else {
+            _outputFolderTitle = path.split("/").slice(0,-1).join("/")
+        }
+        console.log("deug", _outputFolderTitle);
+
+        var {path="No Output Folder Location Set"}=this.state.outputFolder||{path:_outputFolderTitle}
+        let outputFolderTitle=path;
+        if(path.indexOf("\\")!=-1){
+            outputFolderTitle=path.split("\\").pop()+"/";
+        }else{
+             outputFolderTitle = path.split("/").pop() + "/";
+        }
+
         return (
             !this.state.reset &&
-            <div className={styles.app}>
+            <div className={styles.app} onDragOver={this.appDragover} onDragStart={this.appDragstart} onDragEnd={this.appDragend}>
 
                  <audio hidden src={ding_sound} ref={ding=>this._ding=ding}/>
                 {
@@ -186,9 +223,10 @@ export class App extends Component {
                   <div className={styles.row}>
                      <DropZone 
                        title="SET INPUT VIDEO"
-                       onDropFile={this.handleInputVideoFile.bind(this)}
-                       defaultLabelText="No Input Video Set"
+                       onDropFile={(file)=>{ this.handleInputVideoFile(file); }}
+                       label={inputVideoTitle}
                        type="video"
+                       placeholder = "No Input Video Set"
                        />
                     <div>
                         <img src={finger} alt="pointer" className={styles.img_finger}/>
@@ -198,8 +236,8 @@ export class App extends Component {
                        title="SET OUTPUT FOLDER"
                         onDropFile={this.handleOutputFolder.bind(this)}
                         type="folder"
-                        destination_folder_name={this.state.outputFolder}
-                        defaultLabelText="No Output Folder Location Set"
+                        label={outputFolderTitle} 
+                        placeholder = "No Output Folder Location Set"
                        />
                     </div>
                  </div>
@@ -295,24 +333,20 @@ class DropZone extends Component{
     let file= event.dataTransfer.files[0];
     this.propagateFile(file);
    }
+
    propagateFile(file){
         let {name,path,type}=file;
+    //check for input for errors!
     if(this.props.type==="video"){
         if (/video/.test(type)){
-            this.setState({
-                defaultLabelText: name
-            });
             this.props.onDropFile(file);
         }else{
             toast.error("choose video file");
         }
        
     }else if(this.props.type==="folder"){
-        console.log("debug",type);
+        console.log("debug",type,path);
         if(type.trim()===""){
-            this.setState({
-                defaultLabelText: path.split('/').pop()+"/"
-            });
             this.props.onDropFile(file);
         }else{
             toast.error("choose a directory");
@@ -334,12 +368,15 @@ class DropZone extends Component{
         this.propagateFile(files[0]);
      }
     render(){
+       
+           //TODO 
+        
       return(
           <div className={`${styles.column} ${styles.drop_container_wrapper}`}
-            onDragOver={ this.showDropOverlay.bind(this)}
-            onDragStart={this.showDropOverlay.bind(this)}
-            onDragLeave={this.hideDropOverlay.bind(this)}
-            onDrop={this.onDrop.bind(this)}
+                 onDragOver={ this.showDropOverlay.bind(this)}
+                 onDragStart={this.showDropOverlay.bind(this)}
+                 onDragLeave={this.hideDropOverlay.bind(this)}
+                 onDrop={this.onDrop.bind(this)}
             onClick={this.handleUploadClick.bind(this)}
             >
             
@@ -364,15 +401,20 @@ class DropZone extends Component{
                     <div>{this.props.title}</div>
                 </div>)
                 :
-                (<div className={`${styles.drop_overlay}`}>
+                (<div className={`${styles.drop_overlay}`}
+                 onDragOver={ this.showDropOverlay.bind(this)}
+                 onDragStart={this.showDropOverlay.bind(this)}
+                 onDragLeave={this.hideDropOverlay.bind(this)}
+                 onDrop={this.onDrop.bind(this)}
+                >
                     <img src={require("./assets/download.png")} alt="drop icon"/>
                     <div>DROP HERE</div>
                 </div>)
-                }
+                }  
                 <div className={styles.videoTitle}>
-                    {
-                        this.props.destination_folder_name !=null ? this.props.destination_folder_name.path.split('/').slice(-2).shift()+"/":this.state.defaultLabelText
-                    }
+                  {
+                    this.props.label.replace("/","")!=""?this.props.label:this.props.placeholder
+                  }
                 </div>
             </div>
         </div>

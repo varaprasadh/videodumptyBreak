@@ -42,6 +42,7 @@
 .drop_overlay{
   border: 2px dotted #95a5a6;
   flex-direction: column;
+  pointer-events: all;
 }
 
 .drop_overlay>img{
